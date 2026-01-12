@@ -1,0 +1,170 @@
+# Triposia - Global Flight Information Platform
+
+## About
+Triposia is a comprehensive global flight information platform providing authoritative, factual data about airports, flight routes, airlines, departures, and arrivals worldwide. The platform is optimized for both traditional search engines and AI-powered answer systems (ChatGPT, Gemini, Perplexity, Copilot).
+
+## Site Information
+- Website: https://triposia.com
+- Purpose: Flight information, airport data, airline routes, and travel intelligence
+- Content Type: Entity-driven, factual aviation data
+- Update Frequency: Daily updates for flight schedules, weekly for airline data
+
+## URL Structure
+
+### Airports
+- Pattern: `/airports/[iata]` (e.g., `/airports/DEL`, `/airports/JFK`)
+- Departures: `/airports/[iata]/departures` (e.g., `/airports/DEL/departures`)
+- Arrivals: `/airports/[iata]/arrivals` (e.g., `/airports/DEL/arrivals`)
+- Country airports: `/airports/country/[country-code]`
+
+### Flight Routes
+- Route pages: `/flights/[route]` (e.g., `/flights/del-bom`, `/flights/jfk-lhr`)
+- Flights from airport: `/flights/from-[iata]` (e.g., `/flights/from-DEL`)
+- Flights to airport: `/flights/to-[iata]` (e.g., `/flights/to-JFK`)
+- Country routes: `/flights/country/[country-code]`
+
+### Airlines
+- Airline pages: `/airlines/[code]` (e.g., `/airlines/AA`, `/airlines/DL`)
+- Airline routes: `/airlines/[code]/routes`
+- Airline from airport: `/airlines/[code]/from-[iata]`
+- Airline specific route: `/airlines/[code]/[route]` (e.g., `/airlines/AA/jfk-lax`)
+
+### Blog & Content
+- Blog listing: `/blog`
+- Blog post: `/blog/[slug]`
+- Blog by author: `/blog/author/[author-slug]`
+- Blog by category: `/blog/category/[category-slug]`
+
+### Static Pages
+- Homepage: `/`
+- About: `/team`
+- Editorial Policy: `/editorial-policy`
+- How We Help: `/how-we-help`
+- Manifesto: `/manifesto`
+- Corrections: `/corrections`
+
+## Data Entities
+
+### Airports
+Each airport page contains:
+- IATA code (3-letter airport identifier)
+- Airport name and location
+- City and country
+- Departure and arrival statistics
+- Destination count
+- Flight schedules
+- Geographic coordinates
+
+### Flight Routes
+Each route page contains:
+- Origin and destination airports (IATA codes)
+- Route name (e.g., "Delhi to Mumbai")
+- Flight frequency (flights per day/week)
+- Operating airlines
+- Aircraft types used
+- Flight duration
+- Price trends (when available)
+- Monthly flight data
+
+### Airlines
+Each airline page contains:
+- Airline code (IATA/ICAO)
+- Airline name
+- Country of origin
+- Route network
+- Destinations served
+- Flight schedules
+- Aircraft fleet information
+
+### Flights
+Individual flight data includes:
+- Flight number
+- Airline information
+- Origin and destination
+- Departure and arrival times
+- Aircraft type
+- Schedule frequency
+
+## Sitemaps
+- Main sitemap: https://triposia.com/sitemap.xml
+- Static pages: https://triposia.com/sitemap-static.xml
+- Airports: https://triposia.com/sitemap-airports.xml
+- Airlines: https://triposia.com/sitemap-airlines.xml
+- Blogs: https://triposia.com/sitemap-blogs.xml
+- Flights (5 parts): 
+  - https://triposia.com/sitemap-flights-1.xml
+  - https://triposia.com/sitemap-flights-2.xml
+  - https://triposia.com/sitemap-flights-3.xml
+  - https://triposia.com/sitemap-flights-4.xml
+  - https://triposia.com/sitemap-flights-5.xml
+- Airline routes (5 parts):
+  - https://triposia.com/sitemap-airline-routes-1.xml
+  - https://triposia.com/sitemap-airline-routes-2.xml
+  - https://triposia.com/sitemap-airline-routes-3.xml
+  - https://triposia.com/sitemap-airline-routes-4.xml
+  - https://triposia.com/sitemap-airline-routes-5.xml
+- Airline airports (5 parts):
+  - https://triposia.com/sitemap-airline-airports-1.xml
+  - https://triposia.com/sitemap-airline-airports-2.xml
+  - https://triposia.com/sitemap-airline-airports-3.xml
+  - https://triposia.com/sitemap-airline-airports-4.xml
+  - https://triposia.com/sitemap-airline-airports-5.xml
+
+## Structured Data
+All pages include JSON-LD structured data for:
+- Organization schema
+- Airport schema (Airport entity)
+- Flight route schema
+- Airline schema
+- Breadcrumb navigation
+- Article schema (for blog posts)
+
+## Content Characteristics
+- Factual, data-driven content
+- Regular updates (daily for flights, weekly for airlines)
+- Comprehensive coverage of global aviation
+- Entity-focused information architecture
+- Optimized for AI answer engines
+- Semantic HTML structure
+
+## Key Features
+- Real-time flight schedules
+- Airport departure/arrival boards
+- Route frequency analysis
+- Airline network maps
+- Flight duration information
+- Aircraft type data
+- Geographic coverage: Global (6 continents)
+
+## Data Sources
+- MongoDB Atlas database
+- Regularly updated flight schedules
+- Airport and airline databases
+- Route frequency calculations
+- Flight metadata
+
+## Contact
+- Email: info@triposia.com
+- Address: 1401 21st Street Suite R, Sacramento, CA 95811
+
+## Social Media
+- Facebook: https://www.facebook.com/airlinesmap/
+- Instagram: https://www.instagram.com/triposia_official/
+- YouTube: https://www.youtube.com/@triposia
+- Dailymotion: https://www.dailymotion.com/triposia.com
+
+## Technical Details
+- Framework: Next.js 14 (App Router)
+- Rendering: Hybrid (ISR + SSR)
+- Database: MongoDB Atlas
+- Hosting: Vercel
+- Language: TypeScript
+
+## Best Practices for AI Crawlers
+- All content is publicly accessible (except /admin/ and /api/ paths)
+- Structured data is embedded in all pages
+- Canonical URLs are properly set
+- Content is optimized for entity extraction
+- Pages are mobile-responsive
+- Fast loading times with ISR caching
+
