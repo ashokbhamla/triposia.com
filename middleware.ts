@@ -72,8 +72,10 @@ const ALLOWED_BOTS = [
   'Bingbot',
   'bingbot', // Lowercase variant
   'msnbot', // MSN Bot (Microsoft)
+  'MSNBot', // Uppercase variant
   'adidxbot', // Bing Ads Bot
   'BingPreview',
+  'MicrosoftPreview',
   
   // DuckDuckGo
   'DuckDuckBot',
@@ -92,8 +94,24 @@ const ALLOWED_BOTS = [
   'YandexPagechecker',
   'YandexSearch',
   
-  // Other Search Engines
+  // Yahoo
   'Slurp', // Yahoo
+  'Yahoo! Slurp',
+  'YahooSeeker',
+  'Yahoo-MMCrawler',
+  'YahooFeedSeeker',
+  
+  // Schema.org and Structured Data Validators
+  'schema.org',
+  'Google-Structured-Data-Testing-Tool',
+  'RichResultsTest',
+  'Validator.nu',
+  'W3C_Validator',
+  'W3C_I18n-Checker',
+  'W3C_Unicorn',
+  'W3C-mobileOK',
+  
+  // Other Search Engines
   'Baiduspider', // Baidu
   'Sogou', // Sogou
   'Exabot', // Exalead

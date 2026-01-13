@@ -8,10 +8,11 @@ import {
   generatePersonSchema,
   generateWebPageSchema,
   generateBlogListSchema,
+  generateFAQPageSchema,
 } from '@/lib/seo';
 import { fetchPostBySlug, fetchAuthor, fetchCategories, fetchPosts, type Post } from '@/lib/contentApi';
 import { calculateReadingTime, countWords, extractKeywords, generateMetaDescription } from '@/lib/blogUtils';
-import { processContentForSEO, extractImagesFromContent, generateImageSchema } from '@/lib/contentProcessor';
+import { processContentForSEO, extractImagesFromContent, generateImageSchema, extractTextContent } from '@/lib/contentProcessor';
 import { extractHeadings } from '@/lib/tableOfContents';
 import TableOfContents from '@/components/blog/TableOfContents';
 import Link from 'next/link';
@@ -191,6 +192,20 @@ export default async function BlogPostPage({ params }: PageProps) {
   // Generate image schemas for all images in the post
   const imageSchemas = allImages.length > 0 ? generateImageSchema(allImages) : [];
 
+  // Prepare author details for schema
+  const authorSameAs = author ? (
+    (author as any).sameAs || (author as any).social_links ? 
+      (Array.isArray((author as any).social_links) ? (author as any).social_links : 
+       (author as any).social_links ? [(author as any).social_links] : []) :
+      [
+        ...((author as any).linkedin ? [(author as any).linkedin] : []),
+        ...((author as any).twitter ? [(author as any).twitter] : []),
+        ...((author as any).facebook ? [(author as any).facebook] : []),
+        ...((author as any).instagram ? [(author as any).instagram] : []),
+        ...((author as any).youtube ? [(author as any).youtube] : []),
+      ].filter(Boolean)
+  ) : undefined;
+
   // Generate comprehensive schemas
   const blogPostingSchemaBase = generateBlogPostingSchema({
     title: post.title,
@@ -202,6 +217,9 @@ export default async function BlogPostPage({ params }: PageProps) {
     authorUrl: author?.slug ? `${siteUrl}/blog/author/${author.slug}` : undefined,
     authorImage: author?.avatar || undefined,
     authorBio: author?.bio || undefined,
+    authorJobTitle: author ? ((author as any).job_title || (author as any).jobTitle || (author as any).title) : undefined,
+    authorEmail: author ? ((author as any).email) : undefined,
+    authorSameAs: authorSameAs && authorSameAs.length > 0 ? authorSameAs : undefined,
     url: postUrl,
     category: category?.name || undefined,
     keywords: keywords.length > 0 ? keywords : undefined,
@@ -220,12 +238,25 @@ export default async function BlogPostPage({ params }: PageProps) {
     }),
   };
 
-  // Generate Person schema for author
+  // Generate comprehensive Person schema for author with all available fields
   const authorSchema = author ? generatePersonSchema({
     name: author.name,
     url: author.slug ? `${siteUrl}/blog/author/${author.slug}` : undefined,
     image: author.avatar || undefined,
     description: author.bio || undefined,
+    jobTitle: (author as any).job_title || (author as any).jobTitle || (author as any).title || undefined,
+    email: (author as any).email || undefined,
+    sameAs: (author as any).sameAs || (author as any).social_links ? 
+      (Array.isArray((author as any).social_links) ? (author as any).social_links : 
+       (author as any).social_links ? [(author as any).social_links] : []) :
+      (author as any).linkedin ? [(author as any).linkedin] :
+      (author as any).twitter ? [(author as any).twitter] :
+      (author as any).facebook ? [(author as any).facebook] :
+      undefined,
+    worksFor: {
+      name: COMPANY_INFO.name,
+      url: COMPANY_INFO.website,
+    },
   }) : null;
 
   // Generate WebPage schema
@@ -257,6 +288,18 @@ export default async function BlogPostPage({ params }: PageProps) {
     })),
   }) : null;
 
+  // Check for FAQs in the post
+  const faqs = Array.isArray(post.faqs) && post.faqs.length > 0 ? post.faqs : [];
+  
+  // Generate FAQ schema if FAQs exist (strip HTML from answers for schema)
+  const faqSchema = faqs.length > 0 ? generateFAQPageSchema(
+    faqs.map(faq => ({
+      question: faq.question || '',
+      answer: extractTextContent(faq.answer || ''), // Strip HTML for JSON-LD
+    })),
+    `FAQs for ${post.title}`
+  ) : null;
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* JSON-LD Schemas */}
@@ -265,6 +308,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       <JsonLd data={webPageSchema} />
       {authorSchema && <JsonLd data={authorSchema} />}
       {relatedPostsSchema && <JsonLd data={relatedPostsSchema} />}
+      {faqSchema && <JsonLd data={faqSchema} />}
 
       <article itemScope itemType="https://schema.org/BlogPosting">
         {/* Hidden structured data properties */}
@@ -549,8 +593,8 @@ export default async function BlogPostPage({ params }: PageProps) {
             </Box>
           </Paper>
 
-          {/* Author bio */}
-          {author && author.bio && (
+          {/* Author bio with full details */}
+          {author && (
             <Paper sx={{ p: 3, mb: 4, bgcolor: 'background.paper', border: 1, borderColor: 'divider' }}>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                 {author.avatar && (
@@ -559,39 +603,236 @@ export default async function BlogPostPage({ params }: PageProps) {
                     src={author.avatar}
                     alt={author.name}
                     sx={{
-                      width: 80,
-                      height: 80,
+                      width: 100,
+                      height: 100,
                       borderRadius: '50%',
                       objectFit: 'cover',
+                      flexShrink: 0,
                     }}
                   />
                 )}
-                <Box>
-                  <Typography variant="h6" gutterBottom>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                     About {author.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    {author.bio}
-                  </Typography>
-                  {author.slug && (
-                    <MuiLink
-                      component={Link}
-                      href={`/blog/author/${author.slug}`}
-                      sx={{
-                        color: 'primary.main',
-                        textDecoration: 'none',
-                        fontWeight: 600,
-                        '&:hover': {
-                          textDecoration: 'underline',
-                        },
-                      }}
-                    >
-                      View all posts by {author.name} →
-                    </MuiLink>
+                  {((author as any).job_title || (author as any).jobTitle || (author as any).title) && (
+                    <Typography variant="body2" color="primary.main" sx={{ mb: 1, fontWeight: 500 }}>
+                      {(author as any).job_title || (author as any).jobTitle || (author as any).title}
+                    </Typography>
+                  )}
+                  {author.bio && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.8 }}>
+                      {author.bio}
+                    </Typography>
+                  )}
+                  
+                  {/* Social links and contact info */}
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center', mb: 2 }}>
+                    {author.slug && (
+                      <MuiLink
+                        component={Link}
+                        href={`/blog/author/${author.slug}`}
+                        sx={{
+                          color: 'primary.main',
+                          textDecoration: 'none',
+                          fontWeight: 600,
+                          fontSize: '0.9rem',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                      >
+                        View all posts by {author.name} →
+                      </MuiLink>
+                    )}
+                    {(author as any).email && (
+                      <MuiLink
+                        href={`mailto:${(author as any).email}`}
+                        sx={{
+                          color: 'text.secondary',
+                          textDecoration: 'none',
+                          fontSize: '0.9rem',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                            color: 'primary.main',
+                          },
+                        }}
+                      >
+                        {(author as any).email}
+                      </MuiLink>
+                    )}
+                  </Box>
+                  
+                  {/* Social media links */}
+                  {(((author as any).social_links && Array.isArray((author as any).social_links)) ||
+                     (author as any).linkedin || (author as any).twitter || (author as any).facebook ||
+                     (author as any).instagram || (author as any).youtube) && (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 1 }}>
+                      {(author as any).linkedin && (
+                        <MuiLink
+                          href={(author as any).linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            color: 'primary.main',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          LinkedIn
+                        </MuiLink>
+                      )}
+                      {(author as any).twitter && (
+                        <MuiLink
+                          href={(author as any).twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            color: 'primary.main',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          Twitter
+                        </MuiLink>
+                      )}
+                      {(author as any).facebook && (
+                        <MuiLink
+                          href={(author as any).facebook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            color: 'primary.main',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          Facebook
+                        </MuiLink>
+                      )}
+                      {(author as any).instagram && (
+                        <MuiLink
+                          href={(author as any).instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            color: 'primary.main',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          Instagram
+                        </MuiLink>
+                      )}
+                      {(author as any).youtube && (
+                        <MuiLink
+                          href={(author as any).youtube}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            color: 'primary.main',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          YouTube
+                        </MuiLink>
+                      )}
+                      {(author as any).social_links && Array.isArray((author as any).social_links) && 
+                       (author as any).social_links.map((link: string, idx: number) => (
+                         <MuiLink
+                           key={idx}
+                           href={link}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           sx={{
+                             color: 'primary.main',
+                             textDecoration: 'none',
+                             fontSize: '0.85rem',
+                             '&:hover': {
+                               textDecoration: 'underline',
+                             },
+                           }}
+                         >
+                           {new URL(link).hostname.replace('www.', '')}
+                         </MuiLink>
+                       ))
+                      }
+                    </Box>
                   )}
                 </Box>
               </Box>
             </Paper>
+          )}
+
+          {/* FAQs Section */}
+          {faqs.length > 0 && (
+            <Box sx={{ mt: 4 }}>
+              <Typography variant="h2" gutterBottom sx={{ fontSize: '1.75rem', mb: 3 }}>
+                Frequently Asked Questions
+              </Typography>
+              <Paper sx={{ p: { xs: 3, md: 4 } }}>
+                {faqs.map((faq, idx) => (
+                  <Box key={idx} sx={{ mb: idx < faqs.length - 1 ? 4 : 0 }}>
+                    <Typography 
+                      variant="h3" 
+                      sx={{ 
+                        fontSize: '1.25rem', 
+                        mb: 1.5, 
+                        fontWeight: 600,
+                        color: 'text.primary'
+                      }}
+                    >
+                      {faq.question}
+                    </Typography>
+                    <Box
+                      component="div"
+                      dangerouslySetInnerHTML={{ __html: faq.answer || '' }}
+                      sx={{
+                        '& p': {
+                          mb: 1.5,
+                          lineHeight: 1.8,
+                          color: 'text.secondary',
+                        },
+                        '& p:last-child': {
+                          mb: 0,
+                        },
+                        '& ul, & ol': {
+                          mb: 1.5,
+                          pl: 3,
+                          '& li': {
+                            mb: 0.5,
+                            lineHeight: 1.8,
+                          },
+                        },
+                        '& a': {
+                          color: 'primary.main',
+                          textDecoration: 'none',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        },
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Paper>
+            </Box>
           )}
 
           {/* Related posts */}

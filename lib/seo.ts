@@ -864,7 +864,7 @@ export function generateAirlineRouteScheduleSchema(
 }
 
 /**
- * Generate Person schema for authors
+ * Generate Person schema for authors with full details
  */
 export function generatePersonSchema({
   name,
@@ -873,6 +873,8 @@ export function generatePersonSchema({
   description,
   jobTitle,
   sameAs,
+  email,
+  worksFor,
 }: {
   name: string;
   url?: string;
@@ -880,8 +882,14 @@ export function generatePersonSchema({
   description?: string;
   jobTitle?: string;
   sameAs?: string[];
+  email?: string;
+  worksFor?: {
+    '@type'?: string;
+    name: string;
+    url?: string;
+  };
 }) {
-  return {
+  const schema: any = {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name,
@@ -894,8 +902,18 @@ export function generatePersonSchema({
     }),
     ...(description && { description }),
     ...(jobTitle && { jobTitle }),
+    ...(email && { email }),
     ...(sameAs && sameAs.length > 0 && { sameAs }),
+    ...(worksFor && {
+      worksFor: {
+        '@type': worksFor['@type'] || 'Organization',
+        name: worksFor.name,
+        ...(worksFor.url && { url: worksFor.url }),
+      },
+    }),
   };
+  
+  return schema;
 }
 
 /**
@@ -911,6 +929,9 @@ export function generateBlogPostingSchema({
   authorUrl,
   authorImage,
   authorBio,
+  authorJobTitle,
+  authorEmail,
+  authorSameAs,
   url,
   category,
   keywords,
@@ -927,6 +948,9 @@ export function generateBlogPostingSchema({
   authorUrl?: string;
   authorImage?: string;
   authorBio?: string;
+  authorJobTitle?: string;
+  authorEmail?: string;
+  authorSameAs?: string[];
   url: string;
   category?: string;
   keywords?: string[];
@@ -952,6 +976,14 @@ export function generateBlogPostingSchema({
         },
       }),
       ...(authorBio && { description: authorBio }),
+      ...(authorJobTitle && { jobTitle: authorJobTitle }),
+      ...(authorEmail && { email: authorEmail }),
+      ...(authorSameAs && authorSameAs.length > 0 && { sameAs: authorSameAs }),
+      worksFor: {
+        '@type': 'Organization',
+        name: COMPANY_INFO.name,
+        url: COMPANY_INFO.website,
+      },
     },
     publisher: {
       '@type': 'Organization',

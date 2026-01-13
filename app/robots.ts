@@ -56,33 +56,184 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: 'Playwright',
         disallow: ['/'],
       },
+      // Google Search Engine
       {
         userAgent: 'Googlebot',
         allow: '/',
         disallow: ['/admin/', '/api/'],
       },
       {
+        userAgent: 'Googlebot-Image',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'Googlebot-News',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'Googlebot-Video',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'Mediapartners-Google',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'AdsBot-Google',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      // Bing/Microsoft Search Engine
+      {
         userAgent: 'Bingbot',
         allow: '/',
         disallow: ['/admin/', '/api/'],
       },
+      {
+        userAgent: 'bingbot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'msnbot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'MSNBot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'adidxbot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'BingPreview',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      // Yahoo Search Engine
       {
         userAgent: 'Slurp',
         allow: '/',
         disallow: ['/admin/', '/api/'],
       },
       {
+        userAgent: 'Yahoo! Slurp',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YahooSeeker',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      // DuckDuckGo Search Engine
+      {
         userAgent: 'DuckDuckBot',
         allow: '/',
         disallow: ['/admin/', '/api/'],
       },
       {
-        userAgent: 'Baiduspider',
+        userAgent: 'DuckDuckGo-Favicons-Bot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      // Yandex Search Engine
+      {
+        userAgent: 'Yandex',
         allow: '/',
         disallow: ['/admin/', '/api/'],
       },
       {
-        userAgent: 'Yandex',
+        userAgent: 'YandexBot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'yandexbot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexAccessibilityBot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexMobileBot',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexDirect',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexImages',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexMetrika',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexNews',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexPagechecker',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'YandexSearch',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      // Schema.org Validators and Structured Data Validators
+      {
+        userAgent: 'schema.org',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'Google-Structured-Data-Testing-Tool',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'RichResultsTest',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'Validator.nu',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'W3C_Validator',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'W3C_I18n-Checker',
+        allow: '/',
+        disallow: ['/admin/', '/api/'],
+      },
+      {
+        userAgent: 'Baiduspider',
         allow: '/',
         disallow: ['/admin/', '/api/'],
       },
