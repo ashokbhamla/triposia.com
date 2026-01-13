@@ -3,56 +3,141 @@
 import { Box, Container, Typography, Link as MuiLink, IconButton } from '@mui/material';
 import { Phone, Facebook, Instagram, YouTube } from '@mui/icons-material';
 import { COMPANY_INFO } from '@/lib/company';
+import { keyframes } from '@mui/system';
+
+// Animation keyframes
+const pulse = keyframes`
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+`;
+
+const bounce = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+`;
+
+const ring = keyframes`
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+`;
 
 export default function Footer() {
   return (
     <>
       {/* Sticky Call-to-Action Banner */}
       <Box
+        component="a"
+        href="tel:+1-877-922-5372"
         sx={{
           position: 'fixed',
           bottom: 0,
           left: 0,
           right: 0,
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
-          py: { xs: 1, sm: 1.5 },
-          px: { xs: 1.5, sm: 2, md: 3 },
+          bgcolor: '#e8f5e9', // Light green background
+          color: '#1b5e20', // Dark green text
+          py: { xs: 2, sm: 2.5, md: 3 }, // More padding
+          px: { xs: 2, sm: 3, md: 4 }, // More padding
           zIndex: 1000,
-          boxShadow: '0 -2px 8px rgba(0,0,0,0.15)',
+          boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: { xs: 0.75, sm: 1 },
+          gap: { xs: 1, sm: 1.5, md: 2 },
+          textDecoration: 'none',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          animation: `${pulse} 2s ease-in-out infinite`,
+          '&:hover': {
+            bgcolor: '#c8e6c9', // Slightly darker green on hover
+            transform: 'translateY(-2px)',
+            boxShadow: '0 -6px 16px rgba(0,0,0,0.2)',
+            animation: 'none',
+          },
+          '&:active': {
+            transform: 'translateY(0)',
+          },
         }}
       >
-        <Phone sx={{ fontSize: { xs: '1rem', sm: '1.2rem', md: '1.3rem' } }} />
+        {/* Animated phone icon */}
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {/* Ring animation effect */}
+          <Box
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              border: '2px solid #4caf50',
+              animation: `${ring} 2s ease-out infinite`,
+            }}
+          />
+          <Phone 
+            sx={{ 
+              fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+              color: '#2e7d32', // Dark green icon
+              animation: `${bounce} 2s ease-in-out infinite`,
+              position: 'relative',
+              zIndex: 1,
+            }} 
+          />
+        </Box>
+        
+        {/* Text content */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', sm: 'flex-start' } }}>
         <Typography 
           variant="body2" 
           sx={{ 
             fontWeight: 600,
-            fontSize: { xs: '0.75rem', sm: '0.875rem', md: '0.9375rem' },
-            lineHeight: 1.5,
-          }}
-        >
-          <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-            Call{' '}
-          </Box>
-          <MuiLink
-            href="tel:+1-877-922-5372"
+              fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.875rem' },
+              lineHeight: 1.2,
+              color: '#388e3c', // Medium green for "Call" text
+              display: { xs: 'none', sm: 'block' },
+              mb: 0.25,
+            }}
+          >
+            Call Now
+          </Typography>
+          <Typography 
+            component="span"
             sx={{
-              color: 'inherit',
-              textDecoration: 'none',
               fontWeight: 700,
+              fontSize: { xs: '1rem', sm: '1.125rem', md: '1.25rem' },
+              lineHeight: 1.2,
+              color: '#1b5e20', // Dark green for phone number
               whiteSpace: 'nowrap',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
+              letterSpacing: '0.5px',
             }}
           >
             +1-877-922-5372
-          </MuiLink>
         </Typography>
+        </Box>
       </Box>
 
       <Box

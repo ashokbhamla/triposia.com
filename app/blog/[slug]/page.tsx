@@ -301,7 +301,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   ) : null;
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
       {/* JSON-LD Schemas */}
       <JsonLd data={breadcrumbData} />
       <JsonLd data={blogPostingSchema} />
@@ -434,7 +434,12 @@ export default async function BlogPostPage({ params }: PageProps) {
             component="h1"
             itemProp="headline"
             gutterBottom 
-            sx={{ mb: 3, fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 700 }}
+            sx={{ 
+              mb: 3, 
+              fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' }, 
+              fontWeight: 700,
+              lineHeight: { xs: 1.3, md: 1.2 }
+            }}
           >
             {post.title}
           </Typography>
@@ -446,7 +451,12 @@ export default async function BlogPostPage({ params }: PageProps) {
               component="p"
               itemProp="description"
               color="text.secondary" 
-              sx={{ mb: 4, fontWeight: 400, lineHeight: 1.6 }}
+              sx={{ 
+                mb: 4, 
+                fontWeight: 400, 
+                lineHeight: 1.6,
+                fontSize: { xs: '1rem', sm: '1.125rem', md: '1.25rem' }
+              }}
             >
               {post.excerpt}
             </Typography>
@@ -454,10 +464,14 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           {/* Table of Contents and Post content */}
           {processedContent && (
-            <Grid container spacing={4}>
+            <Grid container spacing={{ xs: 2, md: 4 }}>
               {headings.length > 0 && (
                 <Grid item xs={12} md={3}>
-                  <Box sx={{ position: 'sticky', top: 100 }}>
+                  <Box sx={{ 
+                    position: { xs: 'static', md: 'sticky' },
+                    top: { md: 100 },
+                    mb: { xs: 3, md: 0 }
+                  }}>
                     <TableOfContents items={headings} />
                   </Box>
                 </Grid>
@@ -479,14 +493,14 @@ export default async function BlogPostPage({ params }: PageProps) {
                           position: 'relative',
                         },
                       },
-                      '& h1': { fontSize: '2rem' },
-                      '& h2': { fontSize: '1.75rem' },
-                      '& h3': { fontSize: '1.5rem' },
-                      '& h4': { fontSize: '1.25rem' },
+                      '& h1': { fontSize: { xs: '1.75rem', md: '2rem' } },
+                      '& h2': { fontSize: { xs: '1.5rem', md: '1.75rem' } },
+                      '& h3': { fontSize: { xs: '1.25rem', md: '1.5rem' } },
+                      '& h4': { fontSize: { xs: '1.125rem', md: '1.25rem' } },
                       '& p': {
                         mb: 2,
                         lineHeight: 1.8,
-                        fontSize: '1.1rem',
+                        fontSize: { xs: '1rem', md: '1.1rem' },
                       },
                       '& a': {
                         color: 'primary.main',
@@ -525,6 +539,76 @@ export default async function BlogPostPage({ params }: PageProps) {
                         borderRadius: 0.5,
                         fontFamily: 'monospace',
                       },
+                      // Responsive table styling
+                      '& table': {
+                        width: '100%',
+                        maxWidth: '100%',
+                        borderCollapse: 'collapse',
+                        mb: 3,
+                        fontSize: { xs: '0.875rem', md: '1rem' },
+                        overflowX: 'auto',
+                        display: 'block',
+                        overflow: 'auto',
+                        '&::-webkit-scrollbar': {
+                          height: 8,
+                        },
+                        '&::-webkit-scrollbar-track': {
+                          bgcolor: 'action.hover',
+                          borderRadius: 1,
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                          bgcolor: 'text.secondary',
+                          borderRadius: 1,
+                          '&:hover': {
+                            bgcolor: 'text.primary',
+                          },
+                        },
+                        '@media (min-width: 600px)': {
+                          display: 'table',
+                        },
+                      },
+                      '& thead': {
+                        display: 'table-header-group',
+                      },
+                      '& tbody': {
+                        display: 'table-row-group',
+                      },
+                      '& tr': {
+                        display: { xs: 'block', sm: 'table-row' },
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        mb: { xs: 2, sm: 0 },
+                        '&:last-child': {
+                          borderBottom: 'none',
+                        },
+                      },
+                      '& th, & td': {
+                        display: { xs: 'block', sm: 'table-cell' },
+                        padding: { xs: '0.75rem 0.5rem', sm: '0.75rem 1rem' },
+                        textAlign: { xs: 'left', sm: 'inherit' },
+                        borderBottom: { xs: 'none', sm: '1px solid' },
+                        borderColor: { xs: 'transparent', sm: 'divider' },
+                        width: { xs: '100%', sm: 'auto' },
+                        maxWidth: { xs: '100%', sm: 'none' },
+                        wordBreak: 'break-word',
+                        '&:before': {
+                          content: { xs: 'attr(data-label)', sm: 'none' },
+                          fontWeight: 600,
+                          display: { xs: 'inline-block', sm: 'none' },
+                          width: { xs: '30%', sm: 'auto' },
+                          mr: { xs: 1, sm: 0 },
+                        },
+                      },
+                      '& th': {
+                        fontWeight: 600,
+                        bgcolor: 'action.hover',
+                        borderBottom: '2px solid',
+                        borderColor: 'divider',
+                        fontSize: { xs: '0.875rem', md: '0.9375rem' },
+                      },
+                      '& td': {
+                        fontSize: { xs: '0.875rem', md: '0.9375rem' },
+                      },
                     }}
                   />
                 </Paper>
@@ -555,11 +639,11 @@ export default async function BlogPostPage({ params }: PageProps) {
           )}
 
           {/* Share section */}
-          <Paper sx={{ p: 3, bgcolor: 'action.hover', mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ p: { xs: 2, md: 3 }, bgcolor: 'action.hover', mb: 4 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}>
               Share this post
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: { xs: 1.5, md: 2 }, flexWrap: 'wrap' }}>
               <MuiLink
                 href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`}
                 target="_blank"

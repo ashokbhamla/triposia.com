@@ -5,6 +5,7 @@ import { Providers } from './providers';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import FlightSearchBar from '@/components/flights/FlightSearchBar';
+import ContentProtection from '@/components/layout/ContentProtection';
 import { COMPANY_INFO, getSiteUrl } from '@/lib/company';
 import { generateOrganizationSchema } from '@/lib/seo';
 import { currentLanguageConfig } from '@/lib/i18n';
@@ -149,6 +150,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <JsonLd data={organizationSchema} />
+        <ContentProtection />
         <Providers>
           <Header />
           <FlightSearchBar />

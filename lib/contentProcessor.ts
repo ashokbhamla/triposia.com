@@ -113,6 +113,82 @@ export function processContentForSEO(
   // 9. Add IDs to headings for table of contents
   processed = addHeadingIds(processed);
 
+  // 10. Make tables responsive - remove fixed widths and add responsive attributes
+  processed = processed.replace(
+    /<table([^>]*?)>/gi,
+    (match, attributes) => {
+      // Remove width, style with width, and other fixed sizing attributes
+      let cleaned = attributes
+        .replace(/\s+width\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/\s+style\s*=\s*["']([^"']*)["']/gi, (styleMatch: string, styleValue: string) => {
+          // Remove width from style attribute
+          const cleanedStyle = styleValue
+            .replace(/width\s*:\s*[^;]+;?/gi, '')
+            .replace(/min-width\s*:\s*[^;]+;?/gi, '')
+            .replace(/max-width\s*:\s*[^;]+;?/gi, '')
+            .trim()
+            .replace(/;\s*;/g, ';')
+            .replace(/^;|;$/g, '');
+          return cleanedStyle ? ` style="${cleanedStyle}"` : '';
+        });
+      
+      // Add responsive wrapper class if not present
+      if (!/class\s*=/i.test(cleaned)) {
+        cleaned += ' class="responsive-table"';
+      } else if (!/responsive/i.test(cleaned)) {
+        cleaned = cleaned.replace(/class\s*=\s*["']([^"']*)["']/i, 
+          (classMatch: string, classValue: string) => `class="${classValue} responsive-table"`);
+      }
+      
+      return `<table${cleaned}>`;
+    }
+  );
+
+  // 11. Add data-label attributes to table cells for mobile display
+  // This helps with responsive table display on mobile
+  // Process each table separately
+  processed = processed.replace(
+    /<table([^>]*?)>([\s\S]*?)<\/table>/gi,
+    (tableMatch: string, tableAttrs: string, tableContent: string) => {
+      // Extract header cells from thead within this table
+      const theadMatch = tableContent.match(/<thead>([\s\S]*?)<\/thead>/i);
+      if (theadMatch) {
+        const headerCells = theadMatch[1].match(/<th[^>]*>([\s\S]*?)<\/th>/gi);
+        if (headerCells && headerCells.length > 0) {
+          const headers = headerCells.map((th: string) => {
+            const textMatch = th.match(/<th[^>]*>([\s\S]*?)<\/th>/i);
+            return textMatch ? textMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+          });
+          
+          // Process tbody rows to add data-label attributes
+          const processedTableContent = tableContent.replace(
+            /<tr([^>]*?)>([\s\S]*?)<\/tr>/gi,
+            (trMatch: string, trAttrs: string, trContent: string) => {
+              // Only process rows with td cells (not th cells)
+              if (trContent.includes('<td')) {
+                let updatedContent = trContent;
+                const tdMatches = trContent.match(/<td([^>]*?)>([\s\S]*?)<\/td>/gi);
+                if (tdMatches) {
+                  tdMatches.forEach((td: string, index: number) => {
+                    if (headers[index] && !td.includes('data-label')) {
+                      const newTd = td.replace(/<td([^>]*?)>/, 
+                        `<td$1 data-label="${headers[index]}">`);
+                      updatedContent = updatedContent.replace(td, newTd);
+                    }
+                  });
+                }
+                return `<tr${trAttrs}>${updatedContent}</tr>`;
+              }
+              return trMatch;
+            }
+          );
+          return `<table${tableAttrs}>${processedTableContent}</table>`;
+        }
+      }
+      return tableMatch;
+    }
+  );
+
   return processed;
 }
 
