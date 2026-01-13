@@ -1098,6 +1098,108 @@ export function generateWebPageSchema({
 }
 
 /**
+ * Extract YouTube video ID from URL
+ */
+export function extractYouTubeVideoId(url: string): string | null {
+  if (!url) return null;
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Generate VideoObject schema for YouTube videos (optimized for Google Discover and Bing Discover)
+ */
+export function generateVideoObjectSchema({
+  name,
+  description,
+  thumbnailUrl,
+  uploadDate,
+  duration,
+  contentUrl,
+  embedUrl,
+  publisherName,
+  publisherLogo,
+}: {
+  name: string;
+  description: string;
+  thumbnailUrl?: string;
+  uploadDate?: string;
+  duration?: string; // ISO 8601 duration format (e.g., "PT5M30S")
+  contentUrl: string; // YouTube video URL
+  embedUrl?: string; // YouTube embed URL
+  publisherName?: string;
+  publisherLogo?: string;
+}) {
+  const siteUrl = getSiteUrl();
+  
+  // Extract video ID for embed URL if not provided
+  const videoId = extractYouTubeVideoId(contentUrl);
+  const embedUrlFinal = embedUrl || (videoId ? `https://www.youtube.com/embed/${videoId}` : undefined);
+  const thumbnailUrlFinal = thumbnailUrl || (videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : undefined);
+  
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name,
+    description,
+    thumbnailUrl: thumbnailUrlFinal || `${siteUrl}/og-image.png`,
+    uploadDate: uploadDate || new Date().toISOString(),
+    ...(duration && { duration }),
+    contentUrl,
+    embedUrl: embedUrlFinal,
+    publisher: {
+      '@type': 'Organization',
+      name: publisherName || COMPANY_INFO.name,
+      logo: {
+        '@type': 'ImageObject',
+        url: publisherLogo || `${siteUrl}/logo.png`,
+        width: 600,
+        height: 60,
+      },
+    },
+    // Additional properties for better SEO and Discover optimization
+    inLanguage: 'en-US',
+    isAccessibleForFree: true,
+    // For Google Discover and Bing Discover
+    potentialAction: {
+      '@type': 'WatchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: contentUrl,
+        actionPlatform: [
+          'http://schema.org/DesktopWebPlatform',
+          'http://schema.org/MobileWebPlatform',
+        ],
+      },
+    },
+    // Additional properties for better visibility
+    interactionStatistic: {
+      '@type': 'InteractionCounter',
+      interactionType: { '@type': 'WatchAction' },
+    },
+    // Video quality indicators
+    videoQuality: 'HD',
+    // For better indexing
+    mainEntity: {
+      '@type': 'WebPage',
+      '@id': contentUrl,
+    },
+  };
+}
+
+/**
  * Generate ItemList schema for blog listing pages
  */
 export function generateBlogListSchema({

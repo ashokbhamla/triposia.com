@@ -9,6 +9,8 @@ import {
   generateWebPageSchema,
   generateBlogListSchema,
   generateFAQPageSchema,
+  generateVideoObjectSchema,
+  extractYouTubeVideoId,
 } from '@/lib/seo';
 import { fetchPostBySlug, fetchAuthor, fetchCategories, fetchPosts, type Post } from '@/lib/contentApi';
 import { calculateReadingTime, countWords, extractKeywords, generateMetaDescription } from '@/lib/blogUtils';
@@ -300,6 +302,22 @@ export default async function BlogPostPage({ params }: PageProps) {
     `FAQs for ${post.title}`
   ) : null;
 
+  // Check for YouTube video URL
+  const youtubeUrl = (post as any).youtube_url || undefined;
+  const videoId = youtubeUrl ? extractYouTubeVideoId(youtubeUrl) : null;
+  
+  // Generate VideoObject schema if YouTube URL exists
+  const videoSchema = youtubeUrl && videoId ? generateVideoObjectSchema({
+    name: post.title,
+    description: post.excerpt || generateMetaDescription(post.excerpt, post.content_html),
+    contentUrl: youtubeUrl,
+    embedUrl: `https://www.youtube.com/embed/${videoId}`,
+    thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    uploadDate: post.published_at || undefined,
+    publisherName: COMPANY_INFO.name,
+    publisherLogo: `${siteUrl}/logo.png`,
+  }) : null;
+
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3, md: 4 } }}>
       {/* JSON-LD Schemas */}
@@ -309,6 +327,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       {authorSchema && <JsonLd data={authorSchema} />}
       {relatedPostsSchema && <JsonLd data={relatedPostsSchema} />}
       {faqSchema && <JsonLd data={faqSchema} />}
+      {videoSchema && <JsonLd data={videoSchema} />}
 
       <article itemScope itemType="https://schema.org/BlogPosting">
         {/* Hidden structured data properties */}
@@ -915,6 +934,60 @@ export default async function BlogPostPage({ params }: PageProps) {
                     />
                   </Box>
                 ))}
+              </Paper>
+            </Box>
+          )}
+
+          {/* YouTube Video Section */}
+          {youtubeUrl && videoId && (
+            <Box sx={{ mt: 4, mb: 4 }}>
+              <Typography variant="h2" gutterBottom sx={{ fontSize: '1.75rem', mb: 3 }}>
+                Watch Video
+              </Typography>
+              <Paper sx={{ p: { xs: 2, md: 3 }, overflow: 'hidden' }}>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    paddingBottom: '56.25%', // 16:9 aspect ratio
+                    height: 0,
+                    overflow: 'hidden',
+                    borderRadius: 1,
+                    bgcolor: 'background.default',
+                  }}
+                >
+                  <Box
+                    component="iframe"
+                    src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      border: 'none',
+                    }}
+                  />
+                </Box>
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                  <MuiLink
+                    href={youtubeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      color: 'primary.main',
+                      textDecoration: 'none',
+                      fontSize: '0.9rem',
+                      '&:hover': {
+                        textDecoration: 'underline',
+                      },
+                    }}
+                  >
+                    Watch on YouTube →
+                  </MuiLink>
+                </Box>
               </Paper>
             </Box>
           )}
