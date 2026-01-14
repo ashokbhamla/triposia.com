@@ -367,7 +367,7 @@ export default async function AirlinePage({ params }: PageProps) {
         airline.wikipedia_url || (airline as any).facebook_url || (airline as any).linkedin_url) && (
         <Box sx={{ mb: 4 }}>
           <Typography variant="h2" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }, mb: 3, textAlign: 'left', fontWeight: 600 }}>
-            Airlines Contact Information and Customer Services
+            {airline.name} Contact Information and Customer Services
           </Typography>
           <Paper sx={{ p: { xs: 3, md: 4 } }}>
             <Grid container spacing={3}>
