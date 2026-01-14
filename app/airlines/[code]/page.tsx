@@ -23,6 +23,9 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import YouTubeIcon from '@mui/icons-material/YouTube';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import EmailIcon from '@mui/icons-material/Email';
 import StarIcon from '@mui/icons-material/Star';
 import BusinessIcon from '@mui/icons-material/Business';
 import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
@@ -358,63 +361,288 @@ export default async function AirlinePage({ params }: PageProps) {
           : 'Small route network')}
       />
 
-      {/* Contact Information */}
-      {(airline.address || airline.phone || airline.website || airline.city || airline.state) && (
+      {/* Airlines Contact Information and Customer Services */}
+      {(airline.address || airline.phone || airline.website || airline.city || airline.state || 
+        airline.instagram_url || airline.twitter_url || airline.youtube_url || airline.tripadvisor_url || 
+        airline.wikipedia_url || (airline as any).facebook_url || (airline as any).linkedin_url) && (
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h2" gutterBottom sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, mb: 2, textAlign: 'left' }}>
-            Contact Information
+          <Typography variant="h2" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }, mb: 3, textAlign: 'left', fontWeight: 600 }}>
+            Airlines Contact Information and Customer Services
           </Typography>
-          <Paper sx={{ p: 3 }}>
-            <Grid container spacing={2}>
-              {airline.address && (
+          <Paper sx={{ p: { xs: 3, md: 4 } }}>
+            <Grid container spacing={3}>
+              {/* Address with Airline Name */}
+              {(airline.address || airline.city || airline.state || airline.country) && (
                 <Grid item xs={12} md={6}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, mb: 2 }}>
-                    <LocationOnIcon sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0 }} />
-                    <Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        Address
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 3 }}>
+                    <LocationOnIcon sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0, fontSize: '1.5rem' }} />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 1, fontSize: '0.875rem' }}>
+                        {airline.name} Address
                       </Typography>
-                      <Typography variant="body1">
-                        {airline.address}
-                        {airline.city && `, ${airline.city}`}
-                        {airline.state && `, ${airline.state}`}
+                      <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
+                        {airline.address && `${airline.address}`}
+                        {airline.address && (airline.city || airline.state || airline.zipcode || airline.country) && <br />}
+                        {airline.city && airline.city}
+                        {airline.city && airline.state && ', '}
+                        {airline.state && airline.state}
                         {airline.zipcode && ` ${airline.zipcode}`}
-                        {airline.country && `, ${airline.country}`}
+                        {airline.country && (airline.city || airline.state || airline.zipcode) && ', '}
+                        {airline.country && airline.country}
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
               )}
+              
+              {/* Phone Number */}
               {airline.phone && (
                 <Grid item xs={12} md={6}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <PhoneIcon sx={{ color: 'primary.main', flexShrink: 0 }} />
-                    <Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        Phone
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 3 }}>
+                    <PhoneIcon sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0, fontSize: '1.5rem' }} />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 1, fontSize: '0.875rem' }}>
+                        Customer Service Phone
                       </Typography>
-                      <Typography variant="body1">{airline.phone}</Typography>
+                      <MuiLink
+                        href={`tel:${airline.phone.replace(/\s/g, '')}`}
+                        sx={{ 
+                          textDecoration: 'none',
+                          color: 'primary.main',
+                          fontSize: '1.1rem',
+                          fontWeight: 500,
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                      >
+                        {airline.phone}
+                      </MuiLink>
                     </Box>
                   </Box>
                 </Grid>
               )}
+              
+              {/* Website */}
               {airline.website && (
                 <Grid item xs={12} md={6}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <LanguageIcon sx={{ color: 'primary.main', flexShrink: 0 }} />
-                    <Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        Website
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, mb: 3 }}>
+                    <LanguageIcon sx={{ color: 'primary.main', mt: 0.5, flexShrink: 0, fontSize: '1.5rem' }} />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 1, fontSize: '0.875rem' }}>
+                        Official Website
                       </Typography>
                       <MuiLink
                         href={airline.website.startsWith('http') ? airline.website : `https://${airline.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        sx={{ textDecoration: 'underline' }}
+                        sx={{ 
+                          textDecoration: 'none',
+                          color: 'primary.main',
+                          fontSize: '1rem',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
                       >
-                        {airline.website.replace(/^https?:\/\//, '')}
+                        {airline.website.replace(/^https?:\/\//, '').replace(/^www\./, '')}
                       </MuiLink>
                     </Box>
+                  </Box>
+                </Grid>
+              )}
+
+              {/* Social Media Links */}
+              {(airline.instagram_url || airline.twitter_url || airline.youtube_url || airline.tripadvisor_url || 
+                airline.wikipedia_url || (airline as any).facebook_url || (airline as any).linkedin_url) && (
+                <Grid item xs={12}>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600, mb: 2, fontSize: '0.875rem' }}>
+                    Follow {airline.name} on Social Media
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {airline.instagram_url && (
+                      <MuiLink
+                        href={airline.instagram_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <InstagramIcon sx={{ color: '#E4405F', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">Instagram</Typography>
+                      </MuiLink>
+                    )}
+                    {airline.twitter_url && (
+                      <MuiLink
+                        href={airline.twitter_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <TwitterIcon sx={{ color: '#1DA1F2', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">Twitter</Typography>
+                      </MuiLink>
+                    )}
+                    {airline.youtube_url && (
+                      <MuiLink
+                        href={airline.youtube_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <YouTubeIcon sx={{ color: '#FF0000', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">YouTube</Typography>
+                      </MuiLink>
+                    )}
+                    {(airline as any).facebook_url && (
+                      <MuiLink
+                        href={(airline as any).facebook_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <FacebookIcon sx={{ color: '#1877F2', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">Facebook</Typography>
+                      </MuiLink>
+                    )}
+                    {(airline as any).linkedin_url && (
+                      <MuiLink
+                        href={(airline as any).linkedin_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <LinkedInIcon sx={{ color: '#0077B5', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">LinkedIn</Typography>
+                      </MuiLink>
+                    )}
+                    {airline.tripadvisor_url && (
+                      <MuiLink
+                        href={airline.tripadvisor_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <StarIcon sx={{ color: '#00AF87', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">TripAdvisor</Typography>
+                      </MuiLink>
+                    )}
+                    {airline.wikipedia_url && (
+                      <MuiLink
+                        href={airline.wikipedia_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: 'text.primary',
+                          textDecoration: 'none',
+                          px: 2,
+                          py: 1,
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            borderColor: 'primary.main',
+                          },
+                        }}
+                      >
+                        <LanguageIcon sx={{ color: 'text.secondary', fontSize: '1.25rem' }} />
+                        <Typography variant="body2">Wikipedia</Typography>
+                      </MuiLink>
+                    )}
                   </Box>
                 </Grid>
               )}
